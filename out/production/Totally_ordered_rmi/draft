@@ -1,0 +1,336 @@
+//private PriorityQueue<Request> requestQueue = new PriorityQueue<>();
+//private List<NodeI> nodes = new ArrayList<>();
+//private Map<String, byte[]> localFiles = new HashMap<>();
+/*
+    public NodeImplement() {
+        // Initialize RMI and register the remote object
+        // (For simplicity, we won't use RMI in this example)
+    }
+*//*
+    public void setNodes(List<NodeI> nodes) {
+        this.nodes = nodes;
+    }
+
+    public void multicastRequest(Request request) {
+        logicalClock++;
+        request.setLogicalClock(logicalClock);
+
+        // Multicast the request to all nodes
+        for (NodeI node : nodes) {
+            try {
+                node.receiveRequest(request);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+   public void receiveRequest(Request request) {
+        // Receive a request from another node
+        requestQueue.add(request);
+
+        // Multicast an ACK to all nodes
+        for (NodeI node : nodes) {
+            try {
+                node.receiveAck(request);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void receiveAck(Request request) {
+        // Receive an ACK from another node
+        // No need to queue ACKs
+    }
+
+    public void executeRequest(Request request) {
+        // Execute the request once it has been ACKed by all nodes
+        if (request.getOperation().equals(Operation.UPLOAD)) {
+            boolean result = uploadFile(request);
+            // Inform other nodes about the result
+            request.setResult(result);
+            multicastRequest(request);
+        } else if (request.getOperation().equals(Operation.DELETE)) {
+            boolean result = deleteFile(request.getFileName());
+            // Inform other nodes about the result
+            request.setResult(result);
+            multicastRequest(request);
+        } else if (request.getOperation().equals(Operation.DOWNLOAD)) {
+            // Handle download logic
+            Request result = downloadFile(request.getFileName());
+            // Inform other nodes about the result
+            request.setResult(result);
+            multicastRequest(request);
+        } else if (request.getOperation().equals(Operation.SEARCH)) {
+            boolean result = searchFiles(request.getFileName());
+            // Inform other nodes about the result
+            request.setResult(result);
+            multicastRequest(request);
+        }
+    }*/
+    /*try {
+                List<NodeService> nodes = new ArrayList<>();
+                int numNodes = 4;
+
+                // Initialize nodes
+                for (int i = 0; i < numNodes; i++) {
+                    NodeImplement node = new NodeImplement();
+                    nodes.add(node);
+                    node.setNodes(nodes);
+                }
+
+                // Initialize RMI for each node
+                for (int i = 0; i < numNodes; i++) {
+                    initServer(nodes.get(i), i);
+                }
+
+                // Simulate file upload and delete requests
+                simulateRequests(nodes);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            }
+        }*/
+
+        /*
+
+        // Choose a random node as the leader for download and search requests
+                    int leaderIndex = (int) (Math.random() * nodes.size());
+                    NodeImplement leader = nodes.get(leaderIndex);
+
+                // Simulate file upload request
+                Request uploadRequest = new Request(Operation.UPLOAD, fileName, null);
+                nodes.forEach(node -> node.multicastRequest(uploadRequest));
+
+                // Simulate file delete request
+                Request deleteRequest = new Request(Operation.DELETE, fileName, null);
+                nodes.forEach(node -> node.multicastRequest(deleteRequest));
+
+                // Simulate file download request (only executed by the leader)
+                Request downloadRequest = new Request(Operation.DOWNLOAD, fileName, leader);
+                leader.multicastRequest(downloadRequest);
+
+                // Simulate file search request (only executed by the leader)
+                Request searchRequest = new Request(Operation.SEARCH, fileName, leader);
+                leader.multicastRequest(searchRequest);*/
+
+
+
+                 /*public boolean electLeader() throws RemoteException {
+                        // Simulate leader election (randomly choose a leader)
+                        Random random = new Random();
+                        int leaderId = random.nextInt(n);
+
+                        // Check if the current node is the leader
+                        return myService.equals(services[leaderId]);
+                    }*/
+                    /*public boolean electLeader() throws RemoteException, NotBoundException {
+                        // Simulate Raft leader election
+                        // Increment the current term and request votes from other nodes
+                        currentTerm++;
+                        votedFor = myPort;  // Vote for itself
+
+                        // Request votes from other nodes
+                        for (int i = 0; i < n; i++) {
+                            if (i != myPort) {
+                                Registry registry = LocateRegistry.getRegistry(ports[i]);
+                                NodeI node = (NodeI) registry.lookup(services[i]);
+                                node.requestVote(currentTerm, myPort);
+                            }
+                        }
+
+                        // Simulate consensus on the leader
+                        // For simplicity, assume that the current node becomes the leader if it receives a majority of votes
+                        votesReceived = 1;  // Counting the vote from itself
+                        int majorityVotes = (TOTAL_NODES / 2) + 1;
+
+                        long startTime = System.currentTimeMillis();
+                        long elapsedTime = 0;
+                        while (votesReceived < majorityVotes && elapsedTime < TIMEOUT_DURATION) {
+                            // Wait for votes from other nodes
+                            // In a real implementation, this would involve handling asynchronous responses
+                            // For simplicity, we'll simulate by waiting for a short duration
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            elapsedTime = System.currentTimeMillis() - startTime;
+                        }
+
+                        // The node becomes the leader if it received a majority of votes
+                        if (votesReceived >= majorityVotes) {
+                            // Node has received a majority of votes and becomes the leader
+                            isLeader = true;
+
+                            // Additional actions when becoming the leader
+                            // For example, start sending heartbeat messages to other nodes
+
+                            System.out.println("Node " + myService + " is now the leader.");
+                        }
+
+                        return isLeader;
+                    }
+                @Override
+                    public void requestVote(int term, int processID) throws RemoteException, NotBoundException {
+                        // Simulate responding to a vote request
+                        if (term > currentTerm) {
+                            currentTerm = term;
+                            votedFor = processID;
+                        }
+                        System.out.println("Current Term: " + term);
+                        System.out.println("Candidate Id: " + processID);
+
+                        // Find the index of the process ID in the ports array
+                        int indexOfProcess = Arrays.asList(ports).indexOf(processID);
+                        // Send the vote response back to the candidate
+                        /*Registry registry = LocateRegistry.getRegistry(processID);
+                        NodeI candidateNode = (NodeI) registry.lookup(services[processID]);
+                        candidateNode.receiveVoteResponse(currentTerm, isLeader);
+
+                    // Check if the process ID exists in the ports array
+                    if (indexOfProcess != -1) {
+                        // Send the vote response back to the corresponding process
+                        Registry registry = LocateRegistry.getRegistry(ports[indexOfProcess]);
+                        NodeI processNode = (NodeI) registry.lookup(services[indexOfProcess]);
+                        processNode.receiveVoteResponse(currentTerm, isLeader);
+                    } else {
+                        // Handle the case where the process ID is not found
+                        System.out.println("Invalid process ID: " + processID);
+                    }
+                    }
+                */
+                   /* public void receiveVoteResponse(int term, boolean voteGranted) throws RemoteException {
+                        // Process the vote response
+
+                        // Check if the response is for the current term
+                        if (term == currentTerm) {
+                            // Update internal state based on the vote response
+                            if (voteGranted) {
+                                // Node has received a vote from another node
+                                // Increment the vote count
+                                votesReceived++;
+                            } else {
+                                // Node did not receive a vote from another node
+                                // This could happen if the other node has already voted for someone else
+                                // or if it's in a higher term
+
+                                // For simplicity, you might want to update your algorithm accordingly
+                            }
+
+                            // Check if the node has received a majority of votes
+                            int majorityVotes = (TOTAL_NODES / 2) + 1;
+                            if (votesReceived >= majorityVotes) {
+                                // Node has received a majority of votes and becomes the leader
+                                isLeader = true;
+
+                                // Additional actions when becoming the leader
+                                // For example, start sending heartbeat messages to other nodes
+
+                                System.out.println("Node " + myService + " is now the leader.");
+                            }
+                        } else if (term > currentTerm) {
+                            // The response is for a higher term, update the current term
+                            currentTerm = term;
+
+                            // Reset vote count and update internal state accordingly
+                            votesReceived = 0;
+
+                            // For simplicity, you might want to update your algorithm accordingly
+                        }
+                    }*/
+//System.out.println("Node " + 0 + " storage directory: " + storagePath);
+        //System.out.println("Node " + 1 + " storage directory: " + storagePath);
+        //System.out.println("Node " + 2 + " storage directory: " + storagePath);
+        //System.out.println("Node " + 3 + " storage directory: " + storagePath);
+           //System.out.println("url1: " + url1);
+                //System.out.println("url2: " + url2);
+                //System.out.println("url3: " + url3);
+                //System.out.println("url4: " + url4);
+                //System.out.println("Node " + 0 + " storage directory URL: " + URl);
+                //System.out.println("Node " + 1 + " storage directory URL: " + URl);
+                //System.out.println("Node " + 2 + " storage directory URL: " + URl);
+                //System.out.println("Node " + 3 + " storage directory URL: " + URl);
+
+
+/********DAH SAHHHH*********/
+// Simulate file operations using TO-Multicasting
+//String fileName = "example.txt";
+//boolean isLeader = obj.electLeader();
+//System.out.println("Is leader: " + isLeader);
+// Initialize Raft node and start the Raft algorithm
+
+
+//if ((operation == Request.DOWNLOAD || operation == Request.SEARCH) ) {
+// Simulate file download or search request
+                /*if (operation == Request.DOWNLOAD) {
+                    // Simulate file download request
+                    request = new Request(obj.lClock, sender, RId, pId, Request.DOWNLOAD, "test-upload.txt", null, null, false);
+                }
+
+
+            else if(operation == Request.UPLOAD) {
+                // Simulate file upload request
+                byte[] data = "File content goes here.".getBytes();
+                request = new Request(obj.lClock, sender, RId, pId, Request.UPLOAD, "test-upload.txt", data, new Date(), false);
+                obj.multicastRequest(request);
+
+            }
+            else if(operation == Request.SEARCH) {
+                // Simulate file search request
+                request = new Request(obj.lClock, sender, RId, pId, Request.SEARCH, "test-upload.txt", null, null, false);
+            }
+            else {
+                // Simulate file delete request
+                request = new Request(obj.lClock, sender, RId, pId, Request.DELETE, "test-upload.txt", null, null, false);
+                obj.multicastRequest(request);
+
+            }
+
+
+
+            System.out.println("Process: "+ request.pid + " Operation : " + request.operation + "Logical Clock: " + obj.lClock);
+*/
+
+  /*File localFile = new File(Main.PATH + r.getFileName());
+
+                int fileSize = (int) localFile.length();
+                byte[] buffer = new byte[fileSize];
+                try {
+                    BufferedInputStream in = new BufferedInputStream(new FileInputStream(localFile));
+                    in.read(buffer, 0, buffer.length);
+                    in.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                r.setData(buffer);
+                r.setName(fileName);
+                r.setLastModifiedDate(new Date(localFile.lastModified()));
+
+                boolean res = Main.uploadFile(fs);
+                if(res)System.out.println("File uploaded successfully.");
+                else System.out.println("An error occurred. Try again later");
+                */
+                 /*File localFile = new File(Main.PATH + r.getFileName());
+
+                                if(!localFile.exists()) {
+                                    localFile.getParentFile().mkdir();
+                                }
+                                try {
+                                    BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(localFile));
+                                    out.write(fs.getData(), 0, fs.getData().length);
+                                    out.flush();
+                                    out.close();
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }*/
+
+
+
+
