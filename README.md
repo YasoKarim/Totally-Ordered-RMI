@@ -19,11 +19,12 @@ To get started with this project, follow these steps:
 
 ```bash
 git clone https://github.com/YasoKarim/Totally-Ordered-RMI.git
-
+```
 2. Navigate to the project directory:
 
 ```bash
 cd Totally-Ordered-RMI 
+```
 
 2. Run multiple Parallels:
 - Click Run ➡️ Edit Configurations….
@@ -33,17 +34,10 @@ cd Totally-Ordered-RMI
 
 3. Specify the Input:
 - You choose a number to do one of the operations(Delete, Upload, Download and Search)
-
 Each node maintains a local logical clock value.
-o When a node wants to send a request, it updates its logical clock and 
-multicasts the request (timestamped with its logical clock value) to all other 
-nodes.
-o Upon receiving a request, the recipient puts it in a queue ordered by 
-requests’ timestamp (a tie breaker will be needed for requests with the same 
-timestamp e.g. requestId), then the recipient multicasts an ACK to other 
-nodes (ACKs are not queued).
-o A request is executed only when it has been ACKed by all nodes.
-o For the Upload and Delete requests, all nodes should execute the requests.
-o For the Download and Search requests only one node (Leader) should 
-execute the request. (A leader is selected randomly). 
+- When a node wants to send a request, it updates its logical clock and multicasts the request (timestamped with its logical clock value) to all other nodes.
+- Upon receiving a request, the recipient puts it in a queue ordered by requests’ timestamp (a tie breaker will be needed for requests with the same timestamp e.g. requestId), then the recipient multicasts an ACK to other nodes (ACKs are not queued).
+- A request is executed only when it has been ACKed by all nodes.
+- For the Upload and Delete requests, all nodes should execute the requests.
+- For the Download and Search requests only one node (Leader) should execute the request. (A leader is selected randomly). 
 
